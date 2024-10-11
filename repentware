@@ -1,0 +1,46 @@
+-- LocalScript to highlight players
+
+local Players = game:GetService("Players")
+local HighlightService = game:GetService("Highlight")
+
+local function highlightPlayer(player)
+    local character = player.Character or player.CharacterAdded:Wait()
+    local highlight = Instance.new("Highlight")
+
+    highlight.Adornee = character
+    highlight.FillColor = Color3.new(1, 0, 0) -- Red color
+    highlight.FillTransparency = 0.5 -- Transparency level
+    highlight.OutlineColor = Color3.new(0, 0, 0) -- Black outline
+    highlight.OutlineTransparency = 0 -- No outline transparency
+    highlight.Parent = character
+
+    return highlight
+end
+
+local function onPlayerAdded(player)
+    player.CharacterAdded:Connect(function()
+        highlightPlayer(player)
+    end)
+
+    if player.Character then
+        highlightPlayer(player)
+    end
+end
+
+-- Refresh highlights when players join
+Players.PlayerAdded:Connect(onPlayerAdded)
+
+-- Highlight existing players
+for _, player in ipairs(Players:GetPlayers()) do
+    onPlayerAdded(player)
+end
+
+-- Optional: Remove highlights on player removal
+Players.PlayerRemoving:Connect(function(player)
+    if player.Character then
+        local highlight = player.Character:FindFirstChildOfClass("Highlight")
+        if highlight then
+            highlight:Destroy()
+        end
+    end
+end)
