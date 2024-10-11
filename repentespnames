@@ -1,0 +1,43 @@
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Function to create a name label
+local function createNameLabel(player)
+    local character = player.Character or player.CharacterAdded:Wait()
+    
+    local head = character:WaitForChild("Head")
+    local nameLabel = Instance.new("BillboardGui")
+    nameLabel.Adornee = head
+    nameLabel.Size = UDim2.new(0, 100, 0, 50)
+    nameLabel.StudsOffset = Vector3.new(0, 2, 0) -- Position above the head
+    nameLabel.AlwaysOnTop = true
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.TextColor3 = Color3.new(1, 0, 0) -- Red color
+    label.TextScaled = true
+    label.Text = player.Name -- Display the player's name
+    label.Parent = nameLabel
+
+    nameLabel.Parent = head
+end
+
+-- Connect function to player added event
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        createNameLabel(player)
+    end)
+
+    -- Create label for existing player
+    if player.Character then
+        createNameLabel(player)
+    end
+end)
+
+-- Create labels for players already in the game
+for _, player in ipairs(Players:GetPlayers()) do
+    if player.Character then
+        createNameLabel(player)
+    end
+end
